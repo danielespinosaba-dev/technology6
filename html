@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Examen práctico de Scratch · 6°</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Lexend:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: barra superior fija + una tarjeta de reactivo por pantalla; en reactivos prácticos, bloques | programa | escenario */
+:root{
+  --ground:#E9EEF5; --paper:#FFFFFF; --ink:#18222F; --muted:#5B6878; --line:#D3DBE6;
+  --accent:#2D44B5; --accent-soft:#E2E7FB; --ok:#1F8A4C; --warn:#C2410C;
+  --motion:#4C97FF; --looks:#9966FF; --events:#E6A800; --control:#FFAB19;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Lexend","Segoe UI",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45;-webkit-user-select:none;user-select:none}
+input{user-select:text;-webkit-user-select:text}
+button{font:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+h1,h2,h3{font-family:var(--display);line-height:1.1;margin:0;text-wrap:balance}
+
+/* ---------- inicio ---------- */
+.start{min-height:100%;display:grid;place-items:center;padding:24px 16px}
+.start-card{background:var(--paper);border-radius:20px;padding:32px;max-width:560px;width:100%;box-shadow:0 10px 30px rgba(24,34,47,.08);display:grid;gap:18px}
+.eyebrow{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.start-card h1{font-size:44px;color:var(--accent)}
+.field{display:grid;gap:6px}
+.field label{font-weight:600}
+.field input[type=text]{font:inherit;font-size:19px;padding:12px 14px;border:2px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink)}
+.groups{display:flex;gap:10px}
+.gopt{flex:1;position:relative;cursor:pointer}
+.gopt input{position:absolute;opacity:0;width:100%;height:100%;inset:0;margin:0;cursor:pointer}
+.gopt span{display:block;text-align:center;padding:12px;border:2px solid var(--line);border-radius:12px;background:var(--paper);font-family:var(--display);font-size:24px;font-weight:700;color:var(--ink)}
+.gopt input:checked + span{border-color:var(--accent);background:var(--accent);color:#fff}
+.gopt input:focus-visible + span{outline:3px solid var(--accent);outline-offset:2px}
+.jserr{background:#FDE7D7;color:#7C2D12;border-radius:10px;padding:10px 12px;font-size:14px}
+.rules{background:var(--ground);border-radius:12px;padding:14px 16px;font-size:15px;color:var(--muted)}
+.rules ul{margin:6px 0 0;padding-left:20px}
+.btn{border:0;border-radius:12px;padding:12px 22px;font-family:var(--display);font-weight:700;font-size:21px;background:var(--accent);color:#fff}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.ghost{background:var(--paper);color:var(--accent);border:2px solid var(--accent)}
+.err{color:var(--warn);font-size:15px;min-height:1.2em}
+.err.show{background:#FDE7D7;color:#7C2D12;border-radius:10px;padding:10px 12px;font-weight:600}
+
+/* ---------- examen ---------- */
+.exam{min-height:100%;display:grid;grid-template-rows:auto 1fr auto}
+.topbar{display:flex;align-items:center;gap:16px;padding:10px 20px;background:var(--paper);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.topbar .who{font-weight:600}
+.topbar .who small{color:var(--muted);font-weight:400}
+.dots{display:flex;gap:6px;margin-left:auto}
+.dots span{width:12px;height:12px;border-radius:50%;background:var(--line)}
+.dots span.done{background:var(--accent)}
+.dots span.now{background:var(--paper);box-shadow:0 0 0 3px var(--accent)}
+.main{padding:20px;display:grid;gap:16px;align-content:start;max-width:1400px;width:100%;margin:0 auto}
+.qhead{display:flex;gap:14px;align-items:baseline}
+.qnum{font-family:var(--display);font-size:20px;font-weight:800;color:var(--accent);white-space:nowrap}
+.qhead h2{font-size:27px;font-weight:700}
+.qhint{color:var(--muted);font-size:15px;margin-top:-8px}
+.bottombar{display:flex;justify-content:flex-end;align-items:center;gap:14px;padding:12px 20px;background:var(--paper);border-top:1px solid var(--line)}
+.bottombar .note{color:var(--muted);font-size:15px;margin-right:auto}
+
+.panel{background:var(--paper);border-radius:16px;padding:14px;min-width:0}
+.panel-title{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:8px}
+.work{display:grid;grid-template-columns:minmax(230px,290px) minmax(240px,1fr) minmax(340px,560px);gap:14px;align-items:start}
+.work.noPalette{grid-template-columns:minmax(260px,1fr) minmax(360px,600px)}
+.hotwork{display:grid;grid-template-columns:minmax(240px,320px) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:1000px){.hotwork{grid-template-columns:1fr}}
+.work.stageOnly{grid-template-columns:minmax(320px,640px);justify-content:center}
+@media (max-width:1000px){.work,.work.noPalette{grid-template-columns:1fr}}
+
+/* ---------- bloques ---------- */
+.palette{display:grid;gap:8px;justify-items:start}
+.palette .blk{cursor:pointer;white-space:normal;flex-wrap:wrap;text-align:left}
+.palette .blk:hover{filter:brightness(1.07)}
+.script{display:grid;gap:2px;justify-items:start;align-content:start;min-height:240px;padding:10px;border-radius:10px;background:radial-gradient(#DCE3EC 1px,transparent 1.2px) 0 0/16px 16px}
+.scripts-row{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.blk{--c:var(--motion);display:inline-flex;align-items:center;gap:6px;background:var(--c);color:#fff;border-radius:6px;padding:7px 11px;font-weight:600;font-size:15px;line-height:1.2;border:0;box-shadow:inset 0 -2px 0 rgba(0,0,0,.15);white-space:nowrap}
+.blk.hat{border-radius:18px 18px 6px 6px;padding-top:12px}
+.blk.motion{--c:var(--motion)} .blk.looks{--c:var(--looks)} .blk.events{--c:var(--events);color:#2b2100} .blk.control{--c:var(--control);color:#2b1a00}
+.blk .val{background:#fff;color:var(--ink);border-radius:999px;padding:1px 9px;font-family:var(--mono);font-size:14px;min-width:28px;text-align:center}
+.blk input.val{border:2px dashed var(--ink);width:62px;outline:none;font-weight:700}
+.blk input.val:focus{border-color:var(--ink)}
+.blk.events .val,.blk.control .val{color:var(--ink)}
+.blk .tools{display:inline-flex;gap:3px;margin-left:6px}
+.blk .tools button{border:0;background:rgba(0,0,0,.18);color:inherit;border-radius:5px;width:24px;height:24px;font-size:13px;line-height:1;padding:0}
+.cblk{display:grid;justify-items:start}
+.cblk>.blk{border-radius:6px 6px 0 0}
+.cbody{display:grid;gap:2px;justify-items:start;border-left:16px solid var(--c);padding:3px 0 3px 2px;min-height:30px;min-width:120px}
+.cfoot{height:14px;width:90px;background:var(--c);border-radius:0 0 6px 6px}
+.grab{cursor:grab;touch-action:none}
+.dragging,.dragging *{cursor:grabbing!important;user-select:none}
+.dragghost{position:fixed;z-index:100;pointer-events:none;opacity:.9;filter:drop-shadow(0 6px 10px rgba(0,0,0,.25));margin:0}
+.dragsrc{opacity:.3}
+.dropline{position:fixed;z-index:99;width:140px;height:5px;border-radius:3px;background:var(--ink);pointer-events:none}
+.palette.trash{outline:3px dashed var(--warn);outline-offset:4px;border-radius:8px}
+.tipbox{margin-top:10px;display:grid;gap:2px;background:#FFF4D6;color:#5C4300;border-radius:12px;padding:10px 14px;font-size:15px}
+.tipbox strong{font-family:var(--display);font-size:17px}
+.slot{border:2px dashed var(--line);background:transparent;color:var(--muted);border-radius:6px;padding:3px 10px;font-size:13px}
+.slot.active{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);font-weight:600}
+.flagico{width:18px;height:18px;vertical-align:-3px}
+
+/* ---------- escenario ---------- */
+.stagebox{display:grid;gap:8px}
+.stagectl{display:flex;gap:8px;align-items:center}
+.stagectl button{border:2px solid var(--line);background:var(--paper);border-radius:10px;width:46px;height:40px;display:grid;place-items:center;padding:0}
+.stagectl button:hover{border-color:var(--accent)}
+.stagectl .readout{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--muted)}
+.stage{width:100%;aspect-ratio:4/3;border:2px solid var(--line);border-radius:10px;background:#fff;overflow:hidden;display:block;max-width:100%}
+.stage.clickable{cursor:crosshair}
+.stage .spr{cursor:pointer}
+
+/* ---------- opción múltiple / números ---------- */
+.options{display:grid;gap:10px}
+.opt{display:flex;gap:12px;align-items:center;text-align:left;border:2px solid var(--line);background:var(--paper);border-radius:12px;padding:12px 14px;color:var(--ink);font-size:17px}
+.opt .letter{font-family:var(--display);font-weight:800;font-size:20px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--ground);flex:none}
+.opt[aria-pressed=true]{border-color:var(--accent);background:var(--accent-soft)}
+.opt[aria-pressed=true] .letter{background:var(--accent);color:#fff}
+.nums{display:flex;gap:14px;flex-wrap:wrap;align-items:end}
+.nums label{display:grid;gap:4px;font-weight:600}
+.nums input{font-family:var(--mono);font-size:24px;width:130px;padding:8px 10px;border:2px solid var(--line);border-radius:10px}
+.checks{display:grid;gap:6px;font-size:15px;color:var(--muted)}
+.checks li{margin-left:18px}
+
+/* ---------- interfaz (4°) ---------- */
+.mock{display:grid;min-width:720px;grid-template-columns:52px 140px minmax(0,1fr) minmax(220px,280px);grid-template-rows:36px 34px 1fr;height:470px;border:2px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;font-size:13px}
+.mock button{border:0;margin:0;padding:0;background:none;color:inherit;font:inherit;text-align:left;position:relative}
+.mock button:hover{outline:3px solid rgba(45,68,181,.35);outline-offset:-3px;z-index:2}
+.mock .picked{outline:3px solid var(--accent)!important;outline-offset:-3px;z-index:3}
+.m-menu{grid-column:1/-1;background:#5C6BC0;color:#fff;display:flex;gap:18px;align-items:center;padding:0 14px!important;font-weight:600}
+.m-tabs{grid-column:1/4;display:flex;background:#EEF1F8;border-bottom:1px solid var(--line)}
+.m-tab{padding:0 16px!important;display:flex;align-items:center;gap:6px;border-right:1px solid var(--line)!important}
+.m-tab.on{background:#fff}
+.m-ctl{grid-column:4;display:flex!important;gap:10px;align-items:center;padding:0 10px!important;background:#EEF1F8;border-bottom:1px solid var(--line)}
+.m-ctl button{width:32px;height:28px;display:grid;place-items:center;border-radius:6px}
+.m-cats{background:#fff;border-right:1px solid var(--line);display:grid;align-content:start;gap:10px;padding:10px 0!important;justify-items:center;font-size:10px}
+.m-cats i{display:block;width:20px;height:20px;border-radius:50%}
+.m-pal{background:#F9FAFC;border-right:1px solid var(--line);padding:10px!important;display:grid;align-content:start;gap:7px}
+.m-pal span{display:block;height:22px;border-radius:5px}
+.m-code{background:repeating-linear-gradient(0deg,#fff 0 23px,#F1F4F9 23px 24px);padding:20px!important;display:block}
+.m-right{grid-column:4;display:grid;grid-template-rows:auto 1fr;border-left:1px solid var(--line);min-height:0}
+.m-stage{border-bottom:1px solid var(--line);aspect-ratio:4/3;display:block}
+.m-sprites{display:grid;grid-template-columns:1fr 64px;min-height:0}
+.m-spr{padding:8px!important;display:flex!important;gap:8px;align-items:flex-start;background:#F4F6FA}
+.m-spr span{width:52px;height:52px;border-radius:8px;border:2px solid var(--accent);background:#fff;display:grid;place-items:center}
+.m-bd{border-left:1px solid var(--line)!important;display:grid!important;place-items:end center;padding-bottom:12px!important;background:#F4F6FA}
+.m-bd span{width:40px;height:40px;border-radius:50%;background:#5C6BC0;display:grid;place-items:center}
+.asks{display:grid;gap:8px}
+.ask{display:flex;gap:10px;align-items:center;padding:8px 12px;border-radius:10px;background:var(--ground);font-weight:500}
+.ask.now{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.ask .st{font-family:var(--mono);font-size:13px;margin-left:auto;color:var(--muted)}
+
+/* ---------- capas ---------- */
+.overlay{position:fixed;inset:0;background:rgba(24,34,47,.82);display:grid;place-items:center;z-index:50;padding:16px}
+.overlay .card{background:var(--paper);border-radius:18px;padding:28px;max-width:480px;width:100%;display:grid;gap:14px;text-align:center}
+.overlay h2{font-size:32px}
+.overlay .card.lock h2{color:var(--warn)}
+.overlay input{font:inherit;font-size:20px;padding:10px;border:2px solid var(--line);border-radius:10px;text-align:center}
+.result{display:grid;place-items:center;min-height:100%;padding:16px}
+.rcard{background:var(--paper);border-radius:20px;padding:22px 26px;max-width:1080px;width:100%;display:grid;gap:16px;user-select:text;-webkit-user-select:text}
+.rhead{display:flex;gap:20px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;border-bottom:2px solid var(--line);padding-bottom:14px}
+.rhead h2{font-size:34px;margin-top:4px}
+.rmeta{color:var(--muted);font-size:15px;margin-top:4px}
+.rscore{text-align:right}
+.rscore #resAciertos{color:var(--muted);font-size:15px}
+.rbody{display:grid;grid-template-columns:minmax(220px,300px) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:760px){.rbody{grid-template-columns:1fr}}
+.rexits{border-radius:14px;padding:14px 16px;display:grid;gap:4px}
+.rexits.clean{background:#E3F4EA;color:#14532D}
+.rexits.dirty{background:#FDE7D7;color:#7C2D12}
+.rexits .n{font-family:var(--display);font-size:52px;font-weight:800;line-height:1}
+.rexits .lbl{font-weight:600}
+.rexits ul{margin:6px 0 0;padding-left:18px;font-family:var(--mono);font-size:13px}
+.rtable-wrap{overflow-x:auto}
+.rtable{width:100%;border-collapse:collapse;font-size:15px}
+.rtable th{text-align:left;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:4px 8px;border-bottom:1px solid var(--line)}
+.rtable td{padding:6px 8px;border-bottom:1px solid var(--ground)}
+.rtable td.pts{font-family:var(--mono);font-weight:700;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.rtable td.pts.full{color:var(--ok)} .rtable td.pts.zero{color:var(--warn)}
+.shot{display:flex;gap:14px;align-items:center;background:var(--accent-soft);color:var(--accent);border-radius:14px;padding:12px 16px;font-size:16px}
+.shot strong{color:var(--ink)}
+kbd{font-family:var(--mono);font-size:13px;background:var(--paper);border:1px solid var(--line);border-bottom-width:3px;border-radius:6px;padding:1px 6px;color:var(--ink)}
+.rteacher{display:flex;gap:10px;align-items:center;justify-content:flex-end;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.rteacher input{font:inherit;padding:4px 8px;border:1px solid var(--line);border-radius:6px;width:110px}
+.review{display:grid;gap:14px;border-top:2px solid var(--line);padding-top:14px}
+.review h3{font-size:24px}
+.rv-note{margin:-8px 0 0;color:var(--muted);font-size:14px}
+.rv-item{border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;gap:10px}
+.rv-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.rv-head .pts{font-family:var(--mono);font-weight:700}
+.rv-head .pts.full{color:var(--ok)} .rv-head .pts.zero{color:var(--warn)}
+.rv-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:760px){.rv-cols{grid-template-columns:1fr}}
+.rv-col{min-width:0;overflow-x:auto}
+.rv-script{min-height:0!important;padding:6px;transform-origin:top left}
+.rv-script .blk{font-size:13px;padding:5px 9px}
+.rv-empty{color:var(--muted);font-size:14px}
+.rv-checks{margin:0;padding-left:0;list-style:none;display:grid;gap:3px;font-size:14px}
+.rv-checks .ok{color:var(--ok)} .rv-checks .no{color:var(--warn)}
+.linkbtn{border:0;background:none;color:var(--muted);text-decoration:underline;font-size:13px;padding:0}
+.result .card{background:var(--paper);border-radius:20px;padding:32px;max-width:520px;width:100%;display:grid;gap:14px;text-align:center}
+.score{font-family:var(--display);font-size:84px;font-weight:800;color:var(--accent);line-height:1}
+.score small{font-size:30px;color:var(--muted)}
+.sendstate{font-size:15px;color:var(--muted)}
+.sendstate.ok{color:var(--ok)} .sendstate.bad{color:var(--warn)}
+.teachercode{font-family:var(--mono);font-size:13px;background:var(--ground);border-radius:10px;padding:10px;text-align:left;white-space:pre-wrap;user-select:text;-webkit-user-select:text}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ========== INICIO ========== -->
+<section class="start" id="startView">
+  <div class="start-card">
+    <div>
+      <div class="eyebrow">Computación · I Bloque · Programación con Scratch</div>
+      <h1>Examen práctico de 6°</h1>
+    </div>
+    <div id="newForm" class="start-card" style="padding:0;box-shadow:none">
+      <div class="field">
+        <label for="nombre">Escribe tu nombre empezando por tu apellido</label>
+        <input type="text" id="nombre" autocomplete="off" placeholder="Ejemplo: López Pérez Ana">
+      </div>
+      <div class="field">
+        <label>Tu grupo</label>
+        <div class="groups" id="grupos" role="radiogroup" aria-label="Grupo">
+          <label class="gopt"><input type="radio" name="grupo" value="A"><span>A</span></label>
+          <label class="gopt"><input type="radio" name="grupo" value="B"><span>B</span></label>
+        </div>
+      </div>
+      <div class="rules">
+        <strong>Antes de empezar</strong>
+        <ul>
+          <li>El examen se abre en pantalla completa. Si sales o cambias de pestaña, queda registrado.</li>
+          <li>En este examen, el objeto (sprite) es un robot. En varios reactivos vas a armar programas y probarlos con la bandera verde las veces que quieras.</li>
+          <li>Al terminar, toma una captura de pantalla de tu resultado y súbela a Classroom.</li>
+          <li>Cuando pases al siguiente reactivo, ya no podrás regresar.</li>
+        </ul>
+      </div>
+      <div class="err" id="startErr"></div>
+      <noscript><div class="jserr">Este navegador tiene JavaScript desactivado. Abre el examen en Google Chrome.</div></noscript>
+
+      <button class="btn" id="btnStart">Comenzar examen</button>
+    </div>
+    <div id="resumeForm" hidden style="display:grid;gap:14px">
+      <p style="margin:0">Hay un examen sin terminar de <strong id="resumeName"></strong>. Para continuarlo o empezar de nuevo, tu maestra debe escribir su código.</p>
+      <input type="text" id="resumeCode" autocomplete="off" placeholder="Código de la maestra" style="font:inherit;font-size:19px;padding:12px;border:2px solid var(--line);border-radius:12px">
+      <div class="err" id="resumeErr"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn" id="btnResume">Continuar examen</button>
+        <button class="btn ghost" id="btnRestart">Empezar de nuevo</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== EXAMEN ========== -->
+<section class="exam" id="examView" hidden>
+  <header class="topbar">
+    <div class="who" id="who"></div>
+    <div class="dots" id="dots" aria-label="Avance"></div>
+  </header>
+  <main class="main" id="itemHost"></main>
+  <footer class="bottombar">
+    <span class="note" id="footNote"></span>
+    <button class="btn" id="btnNext">Siguiente</button>
+  </footer>
+</section>
+
+<!-- ========== RESULTADO ========== -->
+<section class="result" id="resultView" hidden>
+  <div class="rcard">
+    <div class="rhead">
+      <div>
+        <div class="eyebrow">Computación · Examen práctico de Scratch · I Bloque</div>
+        <h2 id="resName"></h2>
+        <div class="rmeta" id="resMeta"></div>
+      </div>
+      <div class="rscore"><div class="score" id="resScore"></div><div id="resAciertos"></div></div>
+    </div>
+    <div class="rbody">
+      <div class="rexits" id="resExits"></div>
+      <div class="rtable-wrap"><table class="rtable" id="resTable"></table></div>
+    </div>
+    <div class="shot">
+      <svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      <div><strong>Toma una captura de toda esta pantalla y súbela a la tarea de Classroom.</strong><br>En Chromebook: tecla <kbd>Ctrl</kbd> + tecla <kbd>Mostrar ventanas</kbd> (en la fila de arriba del teclado: un rectángulo con dos rayitas).</div>
+    </div>
+    <div class="review" id="review"></div>
+    <div class="rteacher">
+      <button type="button" id="btnNewExam" class="linkbtn">Nuevo examen (solo maestra)</button>
+      <span id="newExamBox" hidden><input type="text" id="newExamCode" autocomplete="off" placeholder="Código"> <button type="button" class="linkbtn" id="btnNewExamGo">Borrar y empezar</button> <span class="err" id="newExamErr"></span></span>
+    </div>
+  </div>
+</section>
+
+<!-- ========== AVISOS ========== -->
+<div class="jserr" id="jsErr" hidden style="position:fixed;left:12px;right:12px;bottom:12px;z-index:200"></div>
+<div class="overlay" id="leaveOverlay" hidden>
+  <div class="card" id="leaveCard">
+    <h2>Saliste del examen</h2>
+    <p id="leaveMsg" style="margin:0"></p>
+    <button class="btn" id="btnBack">Regresar al examen</button>
+  </div>
+</div>
+<div class="overlay" id="lockOverlay" hidden>
+  <div class="card lock">
+    <h2>Examen bloqueado</h2>
+    <p style="margin:0">Saliste del examen demasiadas veces. Levanta la mano: tu maestra debe escribir su código para que continúes.</p>
+    <input type="text" id="unlockCode" autocomplete="off" placeholder="Código de la maestra">
+    <div class="err" id="unlockErr"></div>
+    <button class="btn" id="btnUnlock">Desbloquear</button>
+  </div>
+</div>
+<div class="overlay" id="confirmOverlay" hidden>
+  <div class="card">
+    <h2>¿Terminar el examen?</h2>
+    <p style="margin:0">Ya no podrás cambiar tus respuestas.</p>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button class="btn ghost" id="btnCancelFinish">Revisar</button>
+      <button class="btn" id="btnFinish">Sí, terminar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   CONFIGURACIÓN — edita estas líneas (iguales en los 3 archivos)
+   ===================================================================== */
+const MODO_PRUEBA = true;       // true = nunca pide código ni bloquea (las salidas sí se registran). false = pide el código de la maestra.
+const CODIGO_DOCENTE = "chmx";  // código para desbloquear, continuar o reiniciar
+const MAX_SALIDAS = 3;          // a la tercera salida el examen se bloquea
+/* ===================================================================== */
+
+const GRADO = 6;
+</script>
+<script>
+window.addEventListener("error", e => { const b = document.getElementById("jsErr"); if (b) { b.hidden = false; b.textContent = "Error del examen: " + (e.message || "desconocido") + ". Avisa a tu maestra y abre el examen en Google Chrome."; } });
+/* ---------------------- utilidades ---------------------- */
+const $ = s => document.querySelector(s);
+const el = (tag, attrs = {}, ...kids) => {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") e.className = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (k === "html") e.innerHTML = v;
+    else e.setAttribute(k, v);
+  }
+  for (const k of kids.flat()) if (k != null) e.append(k.nodeType ? k : document.createTextNode(k));
+  return e;
+};
+const num = v => { const n = parseFloat(String(v).replace(",", ".")); return isFinite(n) ? n : 0; };
+const clone = o => JSON.parse(JSON.stringify(o));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const store = {
+  key: "examen-scratch-" + GRADO,
+  get() { try { return JSON.parse(localStorage.getItem(this.key)); } catch (e) { return null; } },
+  set(v) { try { localStorage.setItem(this.key, JSON.stringify(v)); } catch (e) {} },
+  clear() { try { localStorage.removeItem(this.key); } catch (e) {} }
+};
+const FLAG_SVG = '<svg class="flagico" viewBox="0 0 20 20" aria-label="bandera verde"><path d="M4 2v17" stroke="#3a7d1f" stroke-width="2" stroke-linecap="round"/><path d="M5 3c4-2 6 2 11 0v8c-5 2-7-2-11 0z" fill="#4CBF56" stroke="#3a7d1f" stroke-width="1.2"/></svg>';
+const STOP_SVG = '<svg class="flagico" viewBox="0 0 20 20" aria-label="detener"><path d="M7 2h6l5 5v6l-5 5H7l-5-5V7z" fill="#E6503C" stroke="#b53a2a"/></svg>';
+
+/* ---------------------- bloques ---------------------- */
+const DEFS = {
+  whenflag:   { cat: "events", hat: true, parts: ["al hacer clic en", "FLAG"] },
+  whenkey:    { cat: "events", hat: true, parts: ["al presionar tecla", "@espacio"] },
+  whenclicked:{ cat: "events", hat: true, parts: ["al hacer clic en este objeto"] },
+  move:       { cat: "motion", parts: ["mover", 0, "pasos"] },
+  turn:       { cat: "motion", parts: ["girar ↻", 0, "grados"] },
+  pointdir:   { cat: "motion", parts: ["apuntar en dirección", 0] },
+  goto:       { cat: "motion", parts: ["ir a x:", 0, "y:", 1] },
+  changex:    { cat: "motion", parts: ["cambiar x por", 0] },
+  changey:    { cat: "motion", parts: ["cambiar y por", 0] },
+  bounce:     { cat: "motion", parts: ["rebotar si toca un borde"] },
+  rotlr:      { cat: "motion", parts: ["fijar estilo de rotación a", "@izquierda-derecha"] },
+  sayfor:     { cat: "looks", parts: ["decir", 0, "por", 1, "segundos"] },
+  nextcostume:{ cat: "looks", parts: ["siguiente disfraz"] },
+  coloreffect:{ cat: "looks", parts: ["cambiar efecto", "@color", "por", 0] },
+  changesize: { cat: "looks", parts: ["cambiar tamaño por", 0] },
+  setsize:    { cat: "looks", parts: ["fijar tamaño a", 0, "%"] },
+  wait:       { cat: "control", parts: ["esperar", 0, "segundos"] },
+  repeat:     { cat: "control", c: true, parts: ["repetir", 0] },
+  forever:    { cat: "control", c: true, parts: ["por siempre"] }
+};
+const B = (op, ...args) => ({ op, args });
+const C = (op, args, body) => ({ op, args, body });
+const E = (b, ...idx) => { b.edit = idx; return b; };
+function hasInside(scripts, cop, op) {
+  const deep = l => l.some(b => b.op === op || (b.body && deep(b.body)));
+  const walk = l => l.some(b => (b.op === cop && b.body && deep(b.body)) || (b.body && walk(b.body)));
+  return scripts.some(walk);
+}
+
+function blockText(b) {
+  const d = DEFS[b.op];
+  const t = d.parts.map(p => typeof p === "number" ? (b.args[p] ?? "") : p === "FLAG" ? "bandera verde" : String(p).replace("@", "")).join(" ");
+  return b.body ? t + " { " + b.body.map(blockText).join("; ") + " }" : t;
+}
+function scriptText(scripts) { return scripts.map(s => s.map(blockText).join(" → ")).join(" || "); }
+
+/* render: mode = "palette" | "edit" | "locked" ; ctx = {parent, index, onChange, slots} */
+function renderBlock(b, mode, ctx = {}) {
+  const d = DEFS[b.op];
+  const head = el("div", { class: "blk " + d.cat + (d.hat ? " hat" : "") });
+  for (const p of d.parts) {
+    if (typeof p === "number") {
+      const editable = (mode === "edit") || (mode === "locked" && b.edit && b.edit.includes(p));
+      if (editable) {
+        const inp = el("input", { class: "val", type: "text", inputmode: "decimal", value: b.args[p], "aria-label": "valor" });
+        inp.addEventListener("input", () => { b.args[p] = inp.value; });
+        inp.addEventListener("keydown", e => e.stopPropagation());
+        head.append(inp);
+      } else head.append(el("span", { class: "val" }, String(b.args[p])));
+    } else if (p === "FLAG") head.insertAdjacentHTML("beforeend", FLAG_SVG);
+    else if (p.startsWith("@")) head.append(el("span", { class: "val", style: "font-family:var(--body)" }, p.slice(1)));
+    else head.append(el("span", {}, p));
+  }
+  if (mode === "edit") {
+    const tools = el("span", { class: "tools" });
+    if (ctx.index > 0) tools.append(el("button", { type: "button", title: "Subir", "aria-label": "Subir bloque", onclick: e => { e.stopPropagation(); const a = ctx.parent; [a[ctx.index - 1], a[ctx.index]] = [a[ctx.index], a[ctx.index - 1]]; ctx.onChange(true); } }, "↑"));
+    tools.append(el("button", { type: "button", title: "Quitar", "aria-label": "Quitar bloque", onclick: e => { e.stopPropagation(); ctx.parent.splice(ctx.index, 1); ctx.onChange(true); } }, "✕"));
+    head.append(tools);
+  }
+  if (!d.c) { if (mode === "edit" && ctx.reg) ctx.reg(head, head, { list: ctx.parent, index: ctx.index, block: b, isC: false }); return head; }
+  const wrap = el("div", { class: "cblk " + d.cat });
+  wrap.style.setProperty("--c", getComputedStyle(document.documentElement).getPropertyValue("--" + d.cat));
+  const body = el("div", { class: "cbody" });
+  b.body.forEach((ch, i) => body.append(renderBlock(ch, mode, { ...ctx, parent: b.body, index: i })));
+  if (mode === "edit" && ctx.slots) body.append(ctx.slots.make(b.body, "adentro de «" + d.parts[0] + "»"));
+  const foot = el("div", { class: "cfoot" });
+  wrap.append(head, body, foot);
+  if (mode === "edit" && ctx.reg) {
+    ctx.reg(head, wrap, { list: ctx.parent, index: ctx.index, block: b, isC: true });
+    ctx.regZone(body, { list: b.body, index: () => b.body.length, inset: 16 });
+    ctx.regZone(foot, { list: ctx.parent, index: () => ctx.index + 1 });
+  }
+  return wrap;
+}
+
+/* ---------------------- simulador ---------------------- */
+const W = 240, H = 180;
+function newState(setup = {}) {
+  const s = Object.assign({ x: 0, y: 0, dir: 90, size: 100, costume: 0, effect: 0, rot: "all", say: null, backdrop: null }, clone(setup.sprite || {}));
+  s.trail = setup.trail ? [[s.x, s.y]] : null;
+  s.m = { costumeChanges: 0, effectChanges: 0, dist: 0, bounces: 0, timeline: [], says: [], sizeChanges: 0 };
+  return s;
+}
+function halfW(s) { return 26 * s.size / 100; }
+function fence(s) {
+  const hw = halfW(s);
+  s.x = Math.max(-W + hw, Math.min(W - hw, s.x));
+  s.y = Math.max(-H + hw, Math.min(H - hw, s.y));
+}
+function normDir(d) { d = ((d + 180) % 360 + 360) % 360 - 180; return d === -180 ? 180 : d; }
+function moveTo(s, x, y) {
+  const ox = s.x, oy = s.y; s.x = x; s.y = y; fence(s);
+  s.m.dist += Math.hypot(s.x - ox, s.y - oy);
+  if (s.trail) s.trail.push([s.x, s.y]);
+  s.m.timeline.push("move");
+}
+
+async function execList(list, s, ctx) {
+  for (const b of list) { if (ctx.stopped) return; await execBlock(b, s, ctx); }
+}
+async function execBlock(b, s, ctx) {
+  const a = b.args || [];
+  switch (b.op) {
+    case "move": { const r = (90 - s.dir) * Math.PI / 180; moveTo(s, s.x + num(a[0]) * Math.cos(r), s.y + num(a[0]) * Math.sin(r)); break; }
+    case "turn": s.dir = normDir(s.dir + num(a[0])); break;
+    case "pointdir": s.dir = normDir(num(a[0])); break;
+    case "goto": moveTo(s, num(a[0]), num(a[1])); break;
+    case "changex": moveTo(s, s.x + num(a[0]), s.y); break;
+    case "changey": moveTo(s, s.x, s.y + num(a[0])); break;
+    case "bounce": {
+      const hw = halfW(s); let hit = false;
+      if (s.x >= W - hw - 0.01 || s.x <= -W + hw + 0.01) { s.dir = normDir(-s.dir); hit = true; }
+      if (s.y >= H - hw - 0.01 || s.y <= -H + hw + 0.01) { s.dir = normDir(180 - s.dir); hit = true; }
+      if (hit) { s.m.bounces++; s.m.timeline.push("bounce"); }
+      break;
+    }
+    case "rotlr": s.rot = "lr"; break;
+    case "sayfor": s.say = String(a[0]); s.m.says.push(String(a[0])); s.m.timeline.push("say"); ctx.render(); await ctx.sleep(num(a[1])); s.say = null; break;
+    case "nextcostume": s.costume = (s.costume + 1) % 2; s.m.costumeChanges++; s.m.timeline.push("costume"); break;
+    case "coloreffect": s.effect += num(a[0]); s.m.effectChanges++; s.m.timeline.push("effect"); break;
+    case "changesize": s.size = Math.max(5, s.size + num(a[0])); s.m.sizeChanges++; break;
+    case "setsize": s.size = Math.max(5, num(a[0])); break;
+    case "wait": await ctx.sleep(num(a[0])); break;
+    case "repeat": { const n = Math.max(0, Math.round(num(a[0]))); for (let i = 0; i < n && !ctx.stopped; i++) { await execList(b.body, s, ctx); await ctx.tick(); } return; }
+    case "forever": { let i = 0; while (!ctx.stopped && i++ < ctx.foreverCap) { await execList(b.body, s, ctx); await ctx.tick(); } ctx.stopped = true; return; }
+  }
+  ctx.render(); await ctx.tick();
+}
+/* corre sin animación y devuelve el estado final */
+async function simulate(scripts, setup, event = "flag") {
+  const s = newState(setup);
+  const ctx = { stopped: false, foreverCap: 300, render() {}, tick: () => Promise.resolve(), sleep: () => Promise.resolve() };
+  await Promise.all(scripts.filter(sc => sc[0] && sc[0].op === hatFor(event)).map(sc => execList(sc.slice(1), s, ctx)));
+  return s;
+}
+function hatFor(ev) { return ev === "flag" ? "whenflag" : ev === "key" ? "whenkey" : "whenclicked"; }
+
+/* ---------------------- escenario (SVG) ---------------------- */
+function robotSVG(costume) {
+  const legs = costume === 0
+    ? '<rect x="-14" y="18" width="8" height="12" rx="3" fill="#0E6E6E"/><rect x="6" y="18" width="8" height="12" rx="3" fill="#0E6E6E"/>'
+    : '<rect x="-20" y="16" width="8" height="13" rx="3" fill="#0E6E6E" transform="rotate(25 -16 18)"/><rect x="11" y="16" width="8" height="13" rx="3" fill="#0E6E6E" transform="rotate(-25 15 18)"/>';
+  return legs +
+    '<line x1="0" y1="-26" x2="0" y2="-34" stroke="#0E6E6E" stroke-width="3"/><circle cx="0" cy="-36" r="4" fill="#F28C28"/>' +
+    '<rect x="-22" y="-26" width="44" height="46" rx="12" fill="#17A2A2" stroke="#0E6E6E" stroke-width="2.5"/>' +
+    '<rect x="-12" y="-17" width="30" height="16" rx="6" fill="#E9FBFB"/>' +
+    '<circle cx="-2" cy="-9" r="3.2" fill="#18222F"/><circle cx="10" cy="-9" r="3.2" fill="#18222F"/>' +
+    '<rect x="20" y="0" width="12" height="6" rx="3" fill="#F28C28"/>';
+}
+class Stage {
+  constructor(setup, opts = {}) {
+    this.setup = setup; this.opts = opts;
+    this.svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    this.svg.setAttribute("viewBox", "0 0 480 360");
+    this.svg.setAttribute("class", "stage" + (opts.clickable ? " clickable" : ""));
+    this.svg.setAttribute("role", "img");
+    this.svg.setAttribute("aria-label", "Escenario");
+    this.state = newState(setup);
+    this.clicks = [];
+    this.render();
+  }
+  reset() { this.state = newState(this.setup); this.render(); }
+  P(x, y) { return [x + W, H - y]; }
+  render() {
+    const s = this.state, st = this.setup;
+    let g = "";
+    if (st.backdropColor) g += `<rect width="480" height="360" fill="${st.backdropColor}"/>`;
+    if (st.grid) {
+      for (let x = -200; x <= 200; x += 50) { const [px] = this.P(x, 0); g += `<line x1="${px}" y1="0" x2="${px}" y2="360" stroke="${x === 0 ? "#9AA7B8" : (x % 100 ? "#EEF2F7" : "#DCE3EC")}" stroke-width="${x === 0 ? 2 : 1}"/>`; }
+      for (let y = -150; y <= 150; y += 50) { const [, py] = this.P(0, y); g += `<line x1="0" y1="${py}" x2="480" y2="${py}" stroke="${y === 0 ? "#9AA7B8" : (y % 100 ? "#EEF2F7" : "#DCE3EC")}" stroke-width="${y === 0 ? 2 : 1}"/>`; }
+      for (let x = -200; x <= 200; x += 100) if (x) { const [px, py] = this.P(x, 0); g += `<text x="${px}" y="${py + 16}" font-size="13" text-anchor="middle" fill="#5B6878" font-family="JetBrains Mono,monospace">${x}</text>`; }
+      for (let y = -100; y <= 100; y += 100) if (y) { const [px, py] = this.P(0, y); g += `<text x="${px + 6}" y="${py + 4}" font-size="13" fill="#5B6878" font-family="JetBrains Mono,monospace">${y}</text>`; }
+      g += `<text x="472" y="${H - 6}" font-size="14" text-anchor="end" fill="#18222F" font-weight="700" font-family="JetBrains Mono,monospace">x</text>`;
+      g += `<text x="${W + 8}" y="16" font-size="14" fill="#18222F" font-weight="700" font-family="JetBrains Mono,monospace">y</text>`;
+    }
+    for (const mk of (st.markers || [])) {
+      const [px, py] = this.P(mk.x, mk.y);
+      if (mk.kind === "goal") g += `<g transform="translate(${px},${py})"><line x1="0" y1="30" x2="0" y2="-30" stroke="#18222F" stroke-width="3"/><path d="M0 -30h26l-6 9 6 9H0z" fill="#E6503C"/><text x="4" y="46" font-size="13" font-family="Lexend,sans-serif" fill="#18222F">meta</text></g>`;
+      else if (mk.kind === "star") g += `<g transform="translate(${px},${py})"><path d="M0-16 4.7-5.5 16-5 7 2.5 10 14 0 7.5-10 14-7 2.5-16-5-4.7-5.5z" fill="#F2B705" stroke="#B58700"/></g>`;
+      else g += `<g transform="translate(${px},${py})"><circle r="17" fill="#fff" stroke="#2D44B5" stroke-width="3" stroke-dasharray="5 4"/><text y="7" font-size="20" text-anchor="middle" font-weight="800" fill="#2D44B5" font-family="Baloo 2,sans-serif">${mk.label}</text></g>`;
+    }
+    if (s.trail && s.trail.length > 1) g += `<polyline points="${s.trail.map(p => this.P(...p).join(",")).join(" ")}" fill="none" stroke="#2D44B5" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>`;
+    for (const c of this.clicks) { const [px, py] = this.P(c.x, c.y); g += `<g transform="translate(${px},${py})"><circle r="9" fill="#F28C28" stroke="#fff" stroke-width="3"/><text y="-14" font-size="13" text-anchor="middle" font-weight="700" fill="#F28C28" font-family="Lexend,sans-serif">${c.label || ""}</text></g>`; }
+    if (!st.hideSprite) {
+      const [px, py] = this.P(s.x, s.y), sc = s.size / 100;
+      let tf = `translate(${px},${py}) `;
+      if (s.rot === "lr") tf += `scale(${s.dir < 0 ? -sc : sc},${sc})`;
+      else tf += `rotate(${s.dir - 90}) scale(${sc})`;
+      g += `<g class="spr" transform="${tf}" style="filter:hue-rotate(${(s.effect * 1.8) % 360}deg)">${robotSVG(s.costume)}</g>`;
+      if (s.say) {
+        const tw = Math.max(50, s.say.length * 9 + 20), bx = Math.min(470 - tw, px + 20), by = Math.max(4, py - 30 * sc - 44);
+        g += `<g><rect x="${bx}" y="${by}" width="${tw}" height="34" rx="12" fill="#fff" stroke="#9AA7B8" stroke-width="2"/><text x="${bx + tw / 2}" y="${by + 22}" text-anchor="middle" font-size="15" fill="#18222F" font-family="Lexend,sans-serif">${s.say.replace(/[<&]/g, "")}</text></g>`;
+      }
+    }
+    this.svg.innerHTML = g;
+    if (this.onRender) this.onRender(s);
+  }
+  toStage(evt) {
+    const r = this.svg.getBoundingClientRect();
+    return { x: Math.round((evt.clientX - r.left) / r.width * 480 - W), y: Math.round(H - (evt.clientY - r.top) / r.height * 360) };
+  }
+}
+
+/* corre scripts animados en un escenario */
+class Runner {
+  constructor(stage, getScripts) { this.stage = stage; this.getScripts = getScripts; this.ctx = null; this.log = []; }
+  async fire(event, fresh) {
+    if (fresh) { this.stop(); this.stage.reset(); }
+    const scripts = this.getScripts().filter(sc => sc[0] && sc[0].op === hatFor(event));
+    this.log.push(event);
+    if (this.onFire) this.onFire(event);
+    if (!scripts.length) return;
+    const ctx = this.ctx = { stopped: false, foreverCap: 2000, render: () => this.stage.render(), tick: () => sleep(90), sleep: secs => sleep(Math.min(secs, 4) * 1000) };
+    await Promise.all(scripts.map(sc => execList(sc.slice(1), this.stage.state, ctx)));
+    this.stage.render();
+    if (this.onDone) this.onDone(this.stage.state);
+  }
+  stop() { if (this.ctx) this.ctx.stopped = true; if (this.stage.state) { this.stage.state.say = null; this.stage.render(); } }
+}
+
+function stageBox(stage, runner, { controls = true, readout = false } = {}) {
+  const box = el("div", { class: "stagebox" });
+  if (controls) {
+    const ctl = el("div", { class: "stagectl" },
+      el("button", { type: "button", title: "Bandera verde", "aria-label": "Iniciar con la bandera verde", html: FLAG_SVG.replace('class="flagico"', 'width="26" height="26"'), onclick: () => runner.fire("flag", true) }),
+      el("button", { type: "button", title: "Detener", "aria-label": "Detener", html: STOP_SVG.replace('class="flagico"', 'width="24" height="24"'), onclick: () => runner.stop() }));
+    if (readout) {
+      const ro = el("span", { class: "readout" });
+      stage.onRender = s => ro.textContent = `x: ${Math.round(s.x)}   y: ${Math.round(s.y)}   dirección: ${Math.round(s.dir)}`;
+      ctl.append(ro); stage.render();
+    }
+    box.append(ctl);
+  }
+  box.append(stage.svg);
+  return box;
+}
+
+/* ---------------------- tipos de reactivo ---------------------- */
+const TYPES = {};
+
+/* opción múltiple, opcionalmente con programas que se pueden ejecutar */
+TYPES.choice = {
+  render(it, host, st) {
+    const opts = el("div", { class: "options" });
+    it.options.forEach((o, i) => {
+      const b = el("button", { type: "button", class: "opt", "aria-pressed": st.answer === i ? "true" : "false" },
+        el("span", { class: "letter" }, "abc"[i] || String(i + 1)));
+      if (o.blocks) { const s = el("div", { class: "script", style: "min-height:0;background:none" }); o.blocks.forEach(bl => s.append(renderBlock(bl, "locked"))); b.append(s); }
+      else b.append(el("span", {}, o.text));
+      b.onclick = () => { st.answer = i; opts.querySelectorAll(".opt").forEach((x, j) => x.setAttribute("aria-pressed", j === i)); };
+      opts.append(b);
+    });
+    const left = el("div", { class: "panel" }, el("div", { class: "panel-title" }, "Elige una respuesta"), opts);
+    if (!it.scripts && !it.stage) { host.append(left); return; }
+    const work = el("div", { class: "work noPalette" });
+    const prog = el("div", { class: "panel" });
+    if (it.scripts) {
+      prog.append(el("div", { class: "panel-title" }, it.runnable ? "Programas (pruébalos con su botón)" : "Programa"));
+      const row = el("div", { class: "scripts-row" });
+      it.scripts.forEach(sc => {
+        const col = el("div", { style: "display:grid;gap:8px;justify-items:start" });
+        if (sc.label) col.append(el("strong", { style: "font-family:var(--display);font-size:22px" }, sc.label));
+        const s = el("div", { class: "script", style: "min-height:0" }); sc.blocks.forEach(bl => s.append(renderBlock(bl, "locked"))); col.append(s);
+        if (it.runnable) col.append(el("button", { type: "button", class: "btn ghost", style: "font-size:16px;padding:6px 14px", onclick: () => { runner.stop(); stage.setup = Object.assign({}, it.stage, sc.stage || {}); runner.getScripts = () => [sc.blocks]; runner.fire("flag", true); } }, "Probar " + (sc.label || "")));
+        row.append(col);
+      });
+      prog.append(row);
+    }
+    prog.append(el("div", { style: "height:12px" }), left);
+    const stage = new Stage(it.stage || {}); const runner = new Runner(stage, () => []);
+    st.cleanup = () => runner.stop();
+    work.append(prog, el("div", { class: "panel" }, el("div", { class: "panel-title" }, "Escenario"), stageBox(stage, runner, { controls: it.runnable })));
+    if (it.runnable) { const ctl = work.querySelector(".stagectl"); ctl.firstChild.remove(); }
+    host.append(work);
+  },
+  answered: (it, st) => st.answer != null,
+  score: (it, st) => st.answer === it.answer ? (it.points || 1) : 0,
+  describe: (it, st) => st.answer == null ? "" : "abc"[st.answer]
+};
+
+/* respuesta numérica (una o varias casillas) */
+TYPES.number = {
+  render(it, host, st) {
+    st.vals = st.vals || it.inputs.map(() => "");
+    const work = el("div", { class: "work " + (it.stage ? "noPalette" : "stageOnly") });
+    const left = el("div", { class: "panel" });
+    if (it.scripts) {
+      left.append(el("div", { class: "panel-title" }, "Programa"));
+      const row = el("div", { class: "scripts-row" });
+      it.scripts.forEach(sc => { const s = el("div", { class: "script", style: "min-height:0" }); sc.forEach(bl => s.append(renderBlock(bl, "locked"))); row.append(s); });
+      left.append(row, el("div", { style: "height:14px" }));
+    }
+    const nums = el("div", { class: "nums" });
+    it.inputs.forEach((inp, i) => {
+      const f = el("input", { type: "text", inputmode: "decimal", value: st.vals[i], "aria-label": inp.label, autocomplete: "off" });
+      f.oninput = () => st.vals[i] = f.value;
+      nums.append(el("label", {}, inp.label, f));
+    });
+    left.append(el("div", { class: "panel-title" }, "Escribe tu respuesta"), nums);
+    work.append(left);
+    if (it.stage) { const stage = new Stage(it.stage); work.append(el("div", { class: "panel" }, el("div", { class: "panel-title" }, "Escenario"), stageBox(stage, null, { controls: false }))); }
+    host.append(work);
+  },
+  answered: (it, st) => st.vals && st.vals.every(v => String(v).trim() !== ""),
+  score: (it, st) => it.inputs.every((inp, i) => Math.abs(num(st.vals[i]) - inp.answer) <= (inp.tol || 0) && String(st.vals[i]).trim() !== "") ? (it.points || 1) : 0,
+  describe: (it, st) => (st.vals || []).join(", ")
+};
+
+/* clic en el escenario con plano cartesiano */
+TYPES.stageclick = {
+  render(it, host, st) {
+    st.clicks = st.clicks || [];
+    const stage = new Stage(it.stage, { clickable: true });
+    const asks = el("div", { class: "asks" });
+    const drawAsks = () => {
+      asks.innerHTML = "";
+      it.targets.forEach((t, i) => asks.append(el("div", { class: "ask" + (i === st.clicks.length ? " now" : "") }, el("span", {}, t.ask), el("span", { class: "st" }, st.clicks[i] ? "✓ marcado" : ""))));
+    };
+    stage.svg.addEventListener("click", e => {
+      if (st.clicks.length >= it.targets.length) return;
+      const p = stage.toStage(e); st.clicks.push(p);
+      stage.clicks = st.clicks.map((c, i) => ({ ...c, label: it.targets[i].tag })); stage.render(); drawAsks();
+    });
+    const undo = el("button", { type: "button", class: "btn ghost", style: "font-size:16px;padding:6px 14px;justify-self:start", onclick: () => { st.clicks.pop(); stage.clicks = st.clicks.map((c, i) => ({ ...c, label: it.targets[i].tag })); stage.render(); drawAsks(); } }, "Borrar último punto");
+    drawAsks();
+    host.append(el("div", { class: "work noPalette" },
+      el("div", { class: "panel", style: "display:grid;gap:12px" }, el("div", { class: "panel-title" }, "Da clic en el escenario"), asks, undo),
+      el("div", { class: "panel" }, el("div", { class: "panel-title" }, "Escenario"), stageBox(stage, null, { controls: false }))));
+  },
+  answered: (it, st) => st.clicks && st.clicks.length === it.targets.length,
+  score: (it, st) => it.targets.reduce((a, t, i) => a + (st.clicks[i] && Math.hypot(st.clicks[i].x - t.x, st.clicks[i].y - t.y) <= (t.tol || 25) ? 1 : 0), 0),
+  max: it => it.targets.length,
+  describe: (it, st) => (st.clicks || []).map(c => `(${c.x},${c.y})`).join(" ")
+};
+
+/* armar o corregir un programa y probarlo */
+TYPES.build = {
+  render(it, host, st) {
+    st.scripts = st.scripts || clone(it.start || [[]]);
+    st.tries = st.tries || 0;
+    const stage = new Stage(it.stage || {});
+    const runner = new Runner(stage, () => st.scripts);
+    st.log = st.log || [];
+    const tipBox = el("div", { class: "tipbox", hidden: "" });
+    const tipCount = {};
+    const showTip = text => { tipBox.innerHTML = ""; tipBox.append(el("strong", {}, "Pista"), el("span", {}, text)); tipBox.hidden = false; };
+    runner.onFire = ev => {
+      st.log.push(ev);
+      if (ev !== "flag") return;
+      st.tries++;
+      tipBox.hidden = true;
+      clearTimeout(st.tipTimer);
+      st.tipTimer = setTimeout(async () => {
+        if (it.flagTips) { showTip(it.flagTips[Math.min(st.tries, it.flagTips.length) - 1]); return; }
+        const res = await simulate(st.scripts, it.stage || {});
+        const ci = it.checks.findIndex(c => !c.fn(res, st.scripts, st));
+        if (ci < 0 || !it.checks[ci].tips) return;
+        tipCount[ci] = (tipCount[ci] || 0) + 1;
+        const tips = it.checks[ci].tips;
+        showTip(tips[Math.min(tipCount[ci], tips.length) - 1]);
+      }, 1400);
+    };
+    st.cleanup = () => { runner.stop(); clearTimeout(st.tipTimer); };
+    const editable = !!it.palette;
+    let active = null;
+    const slots = {
+      make(arr, label) {
+        const b = el("button", { type: "button", class: "slot" + (active === arr ? " active" : "") }, "+ " + label);
+        b.onclick = () => { active = arr; draw(); };
+        return b;
+      }
+    };
+    const scriptHost = el("div", { class: "scripts-row" });
+    const heads = new Map(), zones = new Map();
+    let pal = null;
+
+    /* ---- arrastrar y soltar ---- */
+    const contains = (blk, list) => !!blk.body && (blk.body === list || blk.body.some(x => contains(x, list)));
+    const isHat = b => DEFS[b.op].hat;
+    const marker = el("div", { class: "dropline", hidden: "" });
+    let drag = null, justDragged = false;
+    const findTarget = (x, y) => {
+      const hit = document.elementFromPoint(x, y);
+      if (!hit) return null;
+      if (drag.from === "script" && pal && hit.closest(".palette")) return { del: true };
+      if (!progPanel.contains(hit)) return null;
+      const head = hit.closest(".blk");
+      if (head && heads.has(head)) {
+        const info = heads.get(head), r = head.getBoundingClientRect();
+        if (y < r.top + r.height / 2 && !isHat(info.block)) return { list: info.list, index: info.index, y: r.top, x: r.left };
+        if (info.isC) return { list: info.block.body, index: 0, y: r.bottom, x: r.left + 16 };
+        return { list: info.list, index: info.index + 1, y: r.bottom, x: r.left };
+      }
+      const zone = [...zones.keys()].find(z => z.contains(hit) && (hit === z || !hit.closest(".blk")));
+      if (zone) { const z = zones.get(zone), r = zone.getBoundingClientRect(); return { list: z.list, index: z.index(), y: z.inset ? r.bottom - 4 : r.bottom, x: r.left + (z.inset || 0) }; }
+      const box = hit.closest(".script") || scriptHost.querySelector(".script");
+      if (box) { const main = st.scripts[0], last = [...box.children].filter(c => c.matches(".blk,.cblk")).pop(); const r = (last || box).getBoundingClientRect(); return { list: main, index: main.length, y: last ? r.bottom : r.top + 8, x: r.left }; }
+      return null;
+    };
+    const startDrag = (e, src) => {
+      if (e.button !== 0 || e.target.closest("input,button")) return;
+      const x0 = e.clientX, y0 = e.clientY;
+      const r = src.node.getBoundingClientRect();
+      const move = ev => {
+        if (!drag) {
+          if (Math.hypot(ev.clientX - x0, ev.clientY - y0) < 6) return;
+          drag = { ...src, dx: x0 - r.left, dy: y0 - r.top, target: null };
+          drag.ghost = src.node.cloneNode(true);
+          drag.ghost.classList.add("dragghost");
+          drag.ghost.style.width = r.width + "px";
+          document.body.append(drag.ghost);
+          if (src.from === "script") src.node.classList.add("dragsrc");
+          document.body.classList.add("dragging");
+        }
+        ev.preventDefault();
+        drag.ghost.style.left = (ev.clientX - drag.dx) + "px";
+        drag.ghost.style.top = (ev.clientY - drag.dy) + "px";
+        const t = drag.target = findTarget(ev.clientX, ev.clientY);
+        if (pal) pal.classList.toggle("trash", !!(t && t.del));
+        if (t && !t.del) { marker.hidden = false; marker.style.left = t.x + "px"; marker.style.top = (t.y - 2) + "px"; }
+        else marker.hidden = true;
+      };
+      const up = () => {
+        window.removeEventListener("pointermove", move);
+        window.removeEventListener("pointerup", up);
+        window.removeEventListener("pointercancel", up);
+        if (!drag) return;
+        const d = drag; drag = null;
+        d.ghost.remove(); marker.hidden = true; document.body.classList.remove("dragging");
+        if (pal) pal.classList.remove("trash");
+        d.node.classList.remove("dragsrc");
+        justDragged = true; setTimeout(() => justDragged = false, 50);
+        drop(d, d.target);
+      };
+      window.addEventListener("pointermove", move);
+      window.addEventListener("pointerup", up);
+      window.addEventListener("pointercancel", up);
+    };
+    const drop = (d, t) => {
+      if (!t) return;
+      const main = st.scripts[0];
+      if (t.del) { d.info.list.splice(d.info.index, 1); draw(true); return; }
+      const blk = d.from === "palette" ? clone(d.tpl) : d.info.block;
+      if (d.from === "script" && contains(blk, t.list)) return;
+      let idx = t.index;
+      if (d.from === "script") { d.info.list.splice(d.info.index, 1); if (d.info.list === t.list && d.info.index < idx) idx--; }
+      if (isHat(blk)) { if (main[0] && isHat(main[0])) main[0] = blk; else main.unshift(blk); }
+      else {
+        if (t.list === main && idx === 0 && main[0] && isHat(main[0])) idx = 1;
+        t.list.splice(idx, 0, blk);
+      }
+      draw(true);
+    };
+
+    const draw = (structural) => {
+      if (structural) runner.stop();
+      scriptHost.innerHTML = ""; heads.clear(); zones.clear();
+      const ctxBase = {
+        onChange: draw, slots,
+        reg: (head, node, info) => { heads.set(head, info); head.classList.add("grab"); head.addEventListener("pointerdown", e => startDrag(e, { from: "script", node, info })); },
+        regZone: (zone, z) => zones.set(zone, z)
+      };
+      st.scripts.forEach((sc, si) => {
+        const box = el("div", { class: "script" });
+        if (it.labels) box.append(el("strong", { style: "font-family:var(--display);font-size:20px" }, it.labels[si]));
+        if (!active || !inTree(st.scripts, active)) active = st.scripts[0];
+        sc.forEach((b, i) => box.append(renderBlock(b, editable ? "edit" : "locked", { ...ctxBase, parent: sc, index: i })));
+        if (editable) box.append(slots.make(sc, sc.length ? "agregar al final" : "arrastra aquí tu primer bloque"));
+        scriptHost.append(box);
+      });
+      if (it.labels) scriptHost.querySelectorAll(".script").forEach(b => b.style.minHeight = "0");
+    };
+    const inTree = (lists, target) => lists.some(l => l === target || l.some(b => b.body && inTree([b.body], target)));
+    draw();
+    const work = el("div", { class: "work" + (editable ? "" : " noPalette") });
+    if (editable) {
+      pal = el("div", { class: "palette" });
+      it.palette.forEach(tpl => {
+        const node = renderBlock(tpl, "palette");
+        node.classList.add("grab");
+        node.addEventListener("pointerdown", e => startDrag(e, { from: "palette", node, tpl }));
+        node.addEventListener("click", () => {
+          if (justDragged) return;
+          const nb = clone(tpl);
+          if (isHat(nb)) { const main = st.scripts[0]; if (main[0] && isHat(main[0])) main[0] = nb; else main.unshift(nb); }
+          else (active || st.scripts[0]).push(nb);
+          draw(true);
+        });
+        pal.append(node);
+      });
+      work.append(el("div", { class: "panel" }, el("div", { class: "panel-title" }, "Bloques"), pal));
+    }
+    const progPanel = el("div", { class: "panel" }, el("div", { class: "panel-title" }, editable ? "Área de programación" : (JSON.stringify(it.start).includes('"edit"') ? "Programa (cambia el número con borde punteado)" : "Programas")), scriptHost);
+    if (editable) progPanel.append(el("p", { class: "qhint", style: "margin:10px 0 0" }, "Arrastra los bloques hasta aquí, como en Scratch. Para meter un bloque en «repetir» o «por siempre», suéltalo justo debajo de su parte de arriba. Para quitar un bloque, arrástralo de regreso a la columna de bloques."));
+    work.append(progPanel, el("div", { class: "panel" }, el("div", { class: "panel-title" }, "Escenario"), stageBox(stage, runner, { readout: it.readout })));
+    progPanel.append(tipBox);
+    document.body.append(marker);
+    const prevCleanup = st.cleanup; st.cleanup = () => { prevCleanup(); marker.remove(); };
+    if (it.events) {
+      stage.svg.addEventListener("click", e => { if (e.target.closest(".spr")) runner.fire("click", false); });
+      st.keyHandler = e => { if (e.code === "Space") { e.preventDefault(); runner.fire("key", false); } };
+      st.keyUp = e => { if (e.code === "Space") e.preventDefault(); };
+      window.addEventListener("keydown", st.keyHandler);
+      window.addEventListener("keyup", st.keyUp);
+      const prev = st.cleanup; st.cleanup = () => { prev(); window.removeEventListener("keydown", st.keyHandler); window.removeEventListener("keyup", st.keyUp); };
+    }
+    host.append(work);
+  },
+  answered: () => true,
+  async evaluate(it, st) {
+    const res = await simulate(st.scripts, it.stage || {});
+    st.passed = it.checks.map(c => !!c.fn(res, st.scripts, st));
+    st.review = { programa: clone(st.scripts), log: (st.log || []).slice(), checks: it.checks.map((c, i) => ({ desc: c.desc, ok: st.passed[i] })) };
+    return st.passed.filter(Boolean).length;
+  },
+  max: it => it.checks.length,
+  describe: (it, st) => scriptText(st.scripts || []) + "  [pruebas con bandera: " + (st.tries || 0) + "]"
+};
+
+/* señalar partes de la interfaz de Scratch */
+TYPES.hotspot = {
+  render(it, host, st) {
+    st.picks = st.picks || [];
+    const asks = el("div", { class: "asks" });
+    const mock = buildMock();
+    const drawAsks = () => {
+      asks.innerHTML = "";
+      it.targets.forEach((t, i) => asks.append(el("div", { class: "ask" + (i === st.picks.length ? " now" : "") }, el("span", {}, (i + 1) + ". " + t.ask), el("span", { class: "st" }, st.picks[i] ? "✓ respondida" : ""))));
+      mock.querySelectorAll(".picked").forEach(x => x.classList.remove("picked"));
+    };
+    mock.addEventListener("click", e => {
+      const r = e.target.closest("[data-r]"); if (!r) return;
+      if (st.picks.length >= it.targets.length) return;
+      st.picks.push(r.dataset.r); drawAsks(); r.classList.add("picked"); setTimeout(() => r.classList.remove("picked"), 450);
+    });
+    drawAsks();
+    host.append(el("div", { class: "hotwork" }, el("div", { class: "panel", style: "display:grid;gap:12px" }, asks,
+      el("button", { type: "button", class: "btn ghost", style: "font-size:16px;padding:6px 14px;justify-self:start", onclick: () => { st.picks.pop(); drawAsks(); } }, "Deshacer última respuesta")),
+      el("div", { class: "panel", style: "overflow-x:auto" }, mock)));
+  },
+  answered: (it, st) => st.picks && st.picks.length === it.targets.length,
+  score: (it, st) => it.targets.reduce((a, t, i) => a + (st.picks[i] === t.region ? 1 : 0), 0),
+  max: it => it.targets.length,
+  describe: (it, st) => (st.picks || []).join(", ")
+};
+function buildMock() {
+  const m = el("div", { class: "mock", role: "group", "aria-label": "Pantalla de Scratch" });
+  const pal = ["#4C97FF", "#4C97FF", "#4C97FF", "#9966FF", "#9966FF", "#FFBF00", "#FFAB19", "#FFAB19"];
+  m.innerHTML = `
+  <button data-r="menu" class="m-menu" aria-label="Barra de menú"><span>Archivo</span><span>Editar</span><span>Tutoriales</span><span style="margin-left:auto">Mi proyecto</span></button>
+  <div class="m-tabs">
+    <button data-r="tab-code" class="m-tab on" aria-label="Pestaña Código">Código</button>
+    <button data-r="tab-costumes" class="m-tab" aria-label="Pestaña Disfraces">Disfraces</button>
+    <button data-r="tab-sounds" class="m-tab" aria-label="Pestaña Sonidos">Sonidos</button>
+  </div>
+  <div class="m-ctl"><button data-r="flag" aria-label="botón 1">${FLAG_SVG}</button><button data-r="stop" aria-label="botón 2">${STOP_SVG}</button><span style="margin-left:auto;color:#5B6878">▭ ▢ ⤢</span></div>
+  <button data-r="cats" class="m-cats" aria-label="Categorías">${["#4C97FF", "#9966FF", "#CF63CF", "#FFBF00", "#FFAB19", "#5CB1D6", "#59C059"].map(c => `<i style="background:${c}"></i>`).join("")}</button>
+  <button data-r="palette" class="m-pal" aria-label="Bloques">${pal.map((c, i) => `<span style="background:${c};width:${70 + (i * 37) % 60}px"></span>`).join("")}</button>
+  <button data-r="code" class="m-code" aria-label="Zona grande del centro"></button>
+  <div class="m-right">
+    <button data-r="stage" class="m-stage" aria-label="Zona blanca con el robot"><svg viewBox="0 0 480 360" width="100%" height="100%"><g transform="translate(240,190) scale(1.6)">${robotSVG(0)}</g></svg></button>
+    <div class="m-sprites">
+      <button data-r="sprites" class="m-spr" aria-label="Lista de personajes"><span><svg viewBox="-40 -45 80 80" width="40" height="40">${robotSVG(0)}</svg></span></button>
+      <button data-r="backdrop" class="m-bd" aria-label="botón de abajo a la derecha"><span><svg viewBox="0 0 24 24" width="22" height="22"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="#fff" stroke-width="2"/><path d="M5 17l5-6 4 4 2-2 3 4" fill="none" stroke="#fff" stroke-width="2"/></svg></span></button>
+    </div>
+  </div>`;
+  return m;
+}
+
+/* ---------------------- flujo del examen ---------------------- */
+let S = null; // estado de la sesión
+let examActive = false;
+let lastIncident = 0;
+
+function totalMax() { return ITEMS.reduce((a, it) => a + maxOf(it), 0); }
+function maxOf(it) { const T = TYPES[it.type]; return T.max ? T.max(it) : (it.points || 1); }
+
+function showView(id) { ["startView", "examView", "resultView"].forEach(v => $("#" + v).hidden = v !== id); }
+
+function save() { store.set({ nombre: S.nombre, grupo: S.grupo, idx: S.idx, results: S.results, salidas: S.salidas, salidasLog: S.salidasLog || [], desbloqueos: S.desbloqueos || 0, inicio: S.inicio, fin: S.fin || null, terminado: S.terminado || false }); }
+
+function startExam(resume) {
+  showView("examView");
+  examActive = true;
+  renderItem();
+  goFullscreen();
+}
+function renderItem() {
+  const it = ITEMS[S.idx];
+  const host = $("#itemHost"); host.innerHTML = "";
+  S.cur = {};
+  $("#who").innerHTML = "";
+  $("#who").append(S.nombre, " ", el("small", {}, `· ${GRADO}° ${S.grupo}`));
+  const dots = $("#dots"); dots.innerHTML = "";
+  ITEMS.forEach((_, i) => dots.append(el("span", { class: i < S.idx ? "done" : i === S.idx ? "now" : "" })));
+  host.append(el("div", { class: "qhead" }, el("span", { class: "qnum" }, `${S.idx + 1} de ${ITEMS.length}`), el("h2", {}, it.prompt)));
+  if (it.hint) host.append(el("p", { class: "qhint" }, it.hint));
+  TYPES[it.type].render(it, host, S.cur);
+  $("#btnNext").textContent = S.idx === ITEMS.length - 1 ? "Terminar examen" : "Siguiente";
+  $("#footNote").textContent = "";
+  window.scrollTo(0, 0);
+  if (document.activeElement) document.activeElement.blur();
+}
+async function next() {
+  const it = ITEMS[S.idx], T = TYPES[it.type];
+  if (!T.answered(it, S.cur)) { $("#footNote").textContent = "Contesta este reactivo antes de continuar."; return; }
+  if (S.idx === ITEMS.length - 1 && $("#confirmOverlay").hidden) { $("#confirmOverlay").hidden = false; return; }
+  $("#confirmOverlay").hidden = true;
+  if (S.cur.cleanup) S.cur.cleanup();
+  const pts = T.evaluate ? await T.evaluate(it, S.cur) : T.score(it, S.cur);
+  S.results[S.idx] = { id: it.id, tema: it.tema, puntos: pts, max: maxOf(it), respuesta: T.describe(it, S.cur) };
+  if (S.cur.review) Object.assign(S.results[S.idx], S.cur.review);
+  S.idx++;
+  save();
+  if (S.idx >= ITEMS.length) finish(); else renderItem();
+}
+function finish() {
+  examActive = false;
+  if (!S.terminado) { S.terminado = true; S.fin = Date.now(); save(); }
+  renderResult();
+}
+const fmtFecha = t => new Date(t).toLocaleDateString("es-MX", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+const fmtHora = t => new Date(t).toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" });
+function renderResult() {
+  const ac = S.results.reduce((a, r) => a + r.puntos, 0), tot = totalMax();
+  const cal = Math.round(ac / tot * 100) / 10;
+  showView("resultView");
+  $("#resName").textContent = S.nombre;
+  $("#resMeta").textContent = `${GRADO}° grupo ${S.grupo} · ${fmtFecha(S.fin)} · de ${fmtHora(S.inicio)} a ${fmtHora(S.fin)} (${Math.max(1, Math.round((S.fin - S.inicio) / 60000))} min)`;
+  $("#resScore").innerHTML = `${cal}<small> / 10</small>`;
+  $("#resAciertos").textContent = `${ac} de ${tot} aciertos`;
+  const ex = $("#resExits"); ex.innerHTML = "";
+  ex.className = "rexits " + (S.salidas ? "dirty" : "clean");
+  ex.append(el("div", { class: "n" }, String(S.salidas)), el("div", { class: "lbl" }, S.salidas === 1 ? "salida de la pantalla del examen" : "salidas de la pantalla del examen"));
+  if (S.salidasLog && S.salidasLog.length) ex.append(el("ul", {}, S.salidasLog.map(x => el("li", {}, `${fmtHora(x.t)} · ${x.tipo}`))));
+  else ex.append(el("div", { style: "font-size:14px" }, "No salió de pantalla completa ni cambió de pestaña."));
+  if (S.desbloqueos) ex.append(el("div", { style: "font-size:14px;font-weight:600" }, `La maestra desbloqueó el examen ${S.desbloqueos} ${S.desbloqueos === 1 ? "vez" : "veces"}.`));
+  const tb = $("#resTable"); tb.innerHTML = "";
+  tb.append(el("tr", {}, el("th", {}, "#"), el("th", {}, "Tema"), el("th", { style: "text-align:right" }, "Puntos")));
+  S.results.forEach((r, i) => tb.append(el("tr", {}, el("td", {}, String(i + 1)), el("td", {}, r.tema),
+    el("td", { class: "pts" + (r.puntos === r.max ? " full" : r.puntos === 0 ? " zero" : "") }, `${r.puntos} / ${r.max}`))));
+  const rv = $("#review"); rv.innerHTML = "";
+  const built = S.results.map((r, i) => ({ r, i, it: ITEMS[i] })).filter(x => x.it && x.it.type === "build");
+  if (!built.length) return;
+  rv.append(el("h3", {}, "Revisión de los programas"), el("p", { class: "rv-note" }, "Para cada reactivo de programación: lo que armó el alumno, un programa que cumple lo pedido y qué requisitos se cumplieron."));
+  built.forEach(({ r, i, it }) => {
+    const col = (title, scripts, text) => {
+      const c = el("div", { class: "rv-col" }, el("div", { class: "panel-title" }, title));
+      if (text) c.append(el("p", { style: "margin:0" }, text));
+      else clone(scripts || []).map(function strip(l) { return l.map(b => { delete b.edit; if (b.body) strip(b.body); return b; }); }).forEach(sc => { const box = el("div", { class: "script rv-script" }); sc.forEach(b => box.append(renderBlock(b, "locked"))); if (!sc.length) box.append(el("span", { class: "rv-empty" }, "(vacío)")); c.append(box); });
+      return c;
+    };
+    const checks = el("ul", { class: "rv-checks" }, (r.checks || []).map(c => el("li", { class: c.ok ? "ok" : "no" }, (c.ok ? "✓ " : "✗ ") + c.desc)));
+    rv.append(el("div", { class: "rv-item" },
+      el("div", { class: "rv-head" }, el("strong", {}, `${i + 1}. ${r.tema}`), el("span", { class: "pts" + (r.puntos === r.max ? " full" : r.puntos === 0 ? " zero" : "") }, `${r.puntos} / ${r.max}`)),
+      el("div", { class: "rv-cols" }, col(it.labels ? "Pruebas del alumno" : "Programa del alumno", it.labels ? null : (r.programa || []), it.labels ? "Usó: " + ([...new Set((r.log || []).map(e => ({ flag: "bandera verde", key: "tecla espacio", click: "clic en el robot" })[e]))].join(", ") || "nada") : null),
+        col(it.solutionText ? "Respuesta esperada" : "Programa esperado", it.solution, it.solutionText || null)),
+      checks));
+  });
+}
+
+/* ---------------------- pantalla completa y salidas ---------------------- */
+const docEl = document.documentElement;
+let fsSupported = !!(docEl.requestFullscreen || docEl.webkitRequestFullscreen);
+const fsElement = () => document.fullscreenElement || document.webkitFullscreenElement || null;
+function goFullscreen() {
+  if (!fsSupported) return;
+  try {
+    const r = docEl.requestFullscreen ? docEl.requestFullscreen() : docEl.webkitRequestFullscreen();
+    if (r && typeof r.catch === "function") r.catch(() => { fsSupported = false; });
+  } catch (e) { fsSupported = false; }
+}
+function incident(kind) {
+  if (!examActive) return;
+  const now = Date.now(); if (now - lastIncident < 1500) return; lastIncident = now;
+  S.salidas++; (S.salidasLog = S.salidasLog || []).push({ t: now, tipo: kind }); save();
+  if (S.salidas >= MAX_SALIDAS && !MODO_PRUEBA) { $("#leaveOverlay").hidden = true; $("#lockOverlay").hidden = false; $("#unlockCode").value = ""; return; }
+  $("#leaveMsg").textContent = MODO_PRUEBA ? `Quedó registrado (${S.salidas}). En modo de prueba el examen no se bloquea.` : `Quedó registrado (${S.salidas} de ${MAX_SALIDAS}). A la salida número ${MAX_SALIDAS}, el examen se bloquea y necesitarás a tu maestra.`;
+  $("#leaveOverlay").hidden = false;
+}
+["fullscreenchange", "webkitfullscreenchange"].forEach(t => document.addEventListener(t, () => { if (!fsElement() && fsSupported) incident("salió de pantalla completa"); }));
+document.addEventListener("visibilitychange", () => { if (document.hidden) incident("cambió de pestaña"); });
+$("#btnBack").onclick = () => { $("#leaveOverlay").hidden = true; goFullscreen(); };
+$("#btnUnlock").onclick = () => {
+  if ($("#unlockCode").value.trim().toLowerCase() !== CODIGO_DOCENTE.toLowerCase() && !MODO_PRUEBA) { $("#unlockErr").textContent = "Código incorrecto."; return; }
+  $("#unlockErr").textContent = ""; $("#lockOverlay").hidden = true; S.desbloqueos = (S.desbloqueos || 0) + 1; save(); lastIncident = Date.now(); goFullscreen();
+};
+document.addEventListener("contextmenu", e => { if (examActive) e.preventDefault(); });
+["copy", "cut", "paste"].forEach(t => document.addEventListener(t, e => { if (examActive && !(e.target.closest && e.target.closest("input"))) e.preventDefault(); }));
+window.addEventListener("beforeunload", e => { if (examActive) { e.preventDefault(); e.returnValue = ""; } });
+
+/* ---------------------- inicio ---------------------- */
+function init() {
+if (MODO_PRUEBA) {
+  ["#resumeCode", "#newExamCode"].forEach(sel => { const x = $(sel); if (x) x.hidden = true; });
+  const rf = $("#resumeForm p"); if (rf) rf.innerHTML = 'Hay un examen sin terminar de <strong id="resumeName"></strong>. Puedes continuarlo o empezar de nuevo.';
+}
+let grupo = null;
+$("#btnStart").onclick = () => {
+  const nombre = $("#nombre").value.trim().replace(/\s+/g, " ");
+  const showErr = m => { const e = $("#startErr"); e.textContent = m; e.classList.add("show"); e.scrollIntoView({ block: "center", behavior: "smooth" }); };
+  $("#startErr").classList.remove("show"); $("#startErr").textContent = "";
+  if (nombre.split(" ").length < 2) { showErr("Escribe tu apellido y tu nombre (al menos dos palabras)."); $("#nombre").focus(); return; }
+  const gsel = document.querySelector('input[name="grupo"]:checked'); grupo = gsel ? gsel.value : null;
+  if (!grupo) { showErr("Elige tu grupo (A o B)."); return; }
+  S = { nombre, grupo, idx: 0, results: [], salidas: 0, inicio: Date.now() };
+  save(); startExam();
+};
+const prev = store.get();
+if (prev && !prev.terminado) {
+  $("#newForm").hidden = true; $("#resumeForm").hidden = false; $("#resumeName").textContent = prev.nombre;
+  const ok = () => { if ($("#resumeCode").value.trim().toLowerCase() !== CODIGO_DOCENTE.toLowerCase() && !MODO_PRUEBA) { $("#resumeErr").textContent = "Código incorrecto."; return false; } return true; };
+  $("#btnResume").onclick = () => { if (!ok()) return; S = prev; startExam(true); };
+  $("#btnRestart").onclick = () => { if (!ok()) return; store.clear(); $("#resumeForm").hidden = true; $("#newForm").hidden = false; };
+} else if (prev && prev.terminado && prev.results) {
+  S = prev; renderResult();
+}
+$("#btnNewExam").onclick = () => { $("#newExamBox").hidden = false; $("#newExamCode").focus(); };
+$("#btnNewExamGo").onclick = () => {
+  if ($("#newExamCode").value.trim().toLowerCase() !== CODIGO_DOCENTE.toLowerCase() && !MODO_PRUEBA) { $("#newExamErr").textContent = "Código incorrecto."; return; }
+  store.clear(); location.reload();
+};
+$("#btnNext").onclick = next;
+$("#btnFinish").onclick = next;
+$("#btnCancelFinish").onclick = () => $("#confirmOverlay").hidden = true;
+}
+</script>
+<script>
+/* =========================== REACTIVOS =========================== */
+const ITEMS = [
+  { id: "ubicar", tema: "Coordenadas x, y", type: "stageclick",
+    prompt: "Marca cada punto en el escenario de Scratch.",
+    hint: "x indica la posición horizontal (− a la izquierda, + a la derecha); y indica la posición vertical (− abajo, + arriba). El centro es x = 0, y = 0.",
+    stage: { grid: true, hideSprite: true },
+    targets: [
+      { ask: "Punto A: x = 100, y = 50", tag: "A", x: 100, y: 50, tol: 22 },
+      { ask: "Punto B: x = −150, y = −100", tag: "B", x: -150, y: -100, tol: 22 }
+    ] },
+  { id: "leer", tema: "Coordenadas x, y", type: "number",
+    prompt: "¿Cuáles son los valores de x y de y del objeto?",
+    hint: "Usa el centro del objeto y las marcas del cuadriculado (cada línea está a 50).",
+    stage: { grid: true, sprite: { x: -100, y: 100 } },
+    inputs: [{ label: "x", answer: -100, tol: 10 }, { label: "y", answer: 100, tol: 10 }] },
+  { id: "predecir", tema: "«cambiar x por» y «cambiar y por»", type: "number",
+    prompt: "Al hacer clic en la bandera verde, ¿en qué valores de x y de y termina el objeto?",
+    scripts: [[B("whenflag"), B("goto", 0, 0), B("changex", 50), B("changey", -100), B("changex", 50)]],
+    inputs: [{ label: "x", answer: 100 }, { label: "y", answer: -100 }] },
+  { id: "rebotar", tema: "«por siempre» + «rebotar si toca un borde»", type: "build",
+    prompt: "Arma un programa que, al hacer clic en la bandera verde, haga que el objeto avance sin detenerse y rebote cada vez que toca un borde del escenario.",
+    hint: "Segundo punto: al regresar hacia la izquierda, el objeto no debe quedar de cabeza.",
+    palette: [B("whenflag"), C("forever", [], []), B("move", 10), B("bounce"), B("rotlr"), B("turn", 15), B("sayfor", "¡Hola!", 2)],
+    stage: { sprite: { x: 0, y: 0 } },
+    solution: [[B("whenflag"), B("rotlr"), C("forever", [], [B("move", 10), B("bounce")])]],
+    checks: [
+      { desc: "Avanza por siempre y rebota en el borde", fn: r => r.m.bounces >= 1 && r.m.dist > 300, tips: ["¿Tu robot se detiene en algún momento? Hay un bloque que repite instrucciones sin fin.", "Llegar al borde no basta: el robot necesita una instrucción que le diga qué hacer cada vez que lo toca."] },
+      { desc: "Usa el estilo de rotación izquierda-derecha", fn: r => r.m.bounces >= 1 && r.m.dist > 300 && r.rot === "lr", tips: ["Observa al robot cuando regresa. ¿Cómo queda su cabeza?", "La forma en que gira un objeto se puede limitar. Busca entre los bloques de Movimiento."] }
+    ] },
+  { id: "direccion", tema: "Bloque «apuntar en dirección»", type: "build",
+    prompt: "El objeto debe subir hasta la estrella, pero con «apuntar en dirección (90)» avanza hacia la derecha. Cambia el número de la dirección para que llegue a la estrella.",
+    hint: "Escribe el número en el espacio con borde punteado y prueba con la bandera verde.",
+    start: [[B("whenflag"), B("goto", 0, -100), E(B("pointdir", 90), 0), B("move", 200)]],
+    stage: { sprite: { x: 0, y: -100 }, markers: [{ x: 0, y: 100, kind: "star" }] }, readout: true,
+    solution: [[B("whenflag"), B("goto", 0, -100), B("pointdir", 0), B("move", 200)]],
+    checks: [{ desc: "Llega a la estrella (x = 0, y = 100)", fn: r => Math.abs(r.x) <= 3 && Math.abs(r.y - 100) <= 3, tips: ["En Scratch, 90 apunta a la derecha. Prueba otro número y observa hacia dónde gira el robot.", "Si 90 es derecha y 180 es abajo, ¿qué número apuntaría hacia arriba?"] }] },
+  { id: "tamano", tema: "«fijar tamaño» y «cambiar tamaño»", type: "number",
+    prompt: "Al terminar este programa, ¿qué tamaño (%) tiene el objeto?",
+    scripts: [[B("whenflag"), B("setsize", 100), C("repeat", [3], [B("changesize", 20)]), B("changesize", -10)]],
+    inputs: [{ label: "Tamaño (%)", answer: 150 }] },
+  { id: "meta", tema: "Programa completo con «repetir»", type: "build",
+    prompt: "Arma un programa que, al hacer clic en la bandera verde, use «repetir» para que el objeto avance desde x = −200 hasta la meta en x = 0, cambiando de disfraz en cada repetición.",
+    hint: "Puedes cambiar los números de los bloques. Arriba del escenario puedes ver el valor de x.",
+    palette: [B("whenflag"), B("goto", -200, 0), C("repeat", [5], []), C("forever", [], []), B("move", 10), B("nextcostume"), B("wait", 0.1), B("turn", 15)],
+    stage: { sprite: { x: -200, y: 0 }, markers: [{ x: 0, y: 0, kind: "goal" }] }, readout: true,
+    solution: [[B("whenflag"), B("goto", -200, 0), C("repeat", [20], [B("move", 10), B("nextcostume")])]],
+    checks: [
+      { desc: "Se detiene en la meta (x = 0)", fn: r => Math.abs(r.x) <= 4 && Math.abs(r.y) <= 4, tips: ["Mira el valor de x cuando el robot se detiene: ¿se pasó, le faltó o no se movió?", "La distancia total es: pasos en cada vuelta × número de vueltas."] },
+      { desc: "Llega a la meta con «mover» y «siguiente disfraz» dentro de «repetir»", fn: (r, sc) => Math.abs(r.x) <= 4 && Math.abs(r.y) <= 4 && r.m.costumeChanges >= 3 && hasInside(sc, "repeat", "nextcostume") && hasInside(sc, "repeat", "move"), tips: ["¿El robot mueve las piernas en cada paso o solo una vez?", "Los bloques que deben repetirse tienen que quedar adentro del bloque «repetir»."] }
+    ] }
+];
+
+</script>
+<script>
+init();
+</script>
+</body>
+</html>
